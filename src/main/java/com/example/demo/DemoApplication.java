@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.dao.BookCategoryDaoImpl;
 import com.example.demo.dao.BookCategoryRepository;
+import com.example.demo.dao.BookRepository;
 import com.example.demo.model.Book;
 import com.example.demo.model.BookCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class DemoApplication implements CommandLineRunner {
     private BookCategoryRepository bookCategoryRepository;
 
     @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
     private BookCategoryDaoImpl bookCategoryDao;
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
@@ -28,21 +32,42 @@ public class DemoApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         // Create a couple of Book and BookCategory
-        bookCategoryRepository.save(new BookCategory("Science Fiction",
-                new Book("Three Body Problem"),
-                new Book("Snow Crash"),
-                new Book("Solaris"),
-                new Book("Body Shop"),
-                new Book("The Forever War")));
+        bookRepository.save(new Book("book1",
+                new BookCategory("alfa"),
+                new BookCategory("beta"),
+                new BookCategory("gamma"),
+                new BookCategory("gamma1"),
+                new BookCategory("gamma2"),
+                new BookCategory("delta")));
+        bookRepository.save(new Book("book2",
+                new BookCategory("beta"),
+                new BookCategory("gamma"),
+                new BookCategory("gamma1"),
+                new BookCategory("delta")));
+        bookRepository.save(new Book("book3",
+                new BookCategory("alfa"),
+                new BookCategory("gamma"),
+                new BookCategory("gamma1"),
+                new BookCategory("gamma3")));
 
-        List<BookCategory> bcs = bookCategoryDao.getCategoriesWithWordInTitle("Body");
+        // no result
+        debug(bookCategoryDao.getBooksWithCategory( "omega"));
+        // 2 books
+        debug(bookCategoryDao.getBooksWithCategory( "alfa"));
+        // 3 books
+        debug(bookCategoryDao.getBooksWithCategory( "gamma"));
 
-        for (BookCategory bc : bcs) {
-            System.out.println("category: " + bc.getName());
-            Set<Book> books = bc.getBooks();
-            for (Book book : books) {
-                System.out.println(book.getName());
+
+    }
+
+    private void debug(List<Book> books) {
+        for (Book book : books) {
+            System.out.println("book: " + book.getName());
+            Set<BookCategory> cat = book.getBookCategory();
+            for (BookCategory bookCategory : cat) {
+                System.out.println("\tcategory: " + bookCategory.getName());
             }
         }
+
     }
 }

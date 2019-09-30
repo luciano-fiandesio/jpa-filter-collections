@@ -3,9 +3,12 @@ package com.example.demo.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Data
-
+@EqualsAndHashCode(exclude = "bookCategory")
 @Entity
 public class Book {
 
@@ -18,11 +21,14 @@ public class Book {
 
     private String name;
 
-    @ManyToOne
-    @JoinColumn
-    private BookCategory bookCategory;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private Set<BookCategory> bookCategory;
 
-    public Book(String name) {
+    public Book(String name, BookCategory ... categories) {
         this.name = name;
+        this.bookCategory = Stream.of(categories).collect(Collectors.toSet());
+        this.bookCategory.forEach(x -> x.setBook(this));
     }
+
+
 }

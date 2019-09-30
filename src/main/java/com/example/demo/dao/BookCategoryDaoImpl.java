@@ -27,4 +27,13 @@ public class BookCategoryDaoImpl implements BookCategoryCustomRepository {
         return query.getResultList();
 
     }
+
+    public List<Book> getBooksWithCategory(String category) {
+
+        String hql = "select distinct b from Book as b JOIN FETCH b.bookCategory as bc where bc.name like :word";
+        Query query = em.createQuery(hql);
+        query.setParameter("word", "%" + category + "%");
+        return query.getResultList();
+
+    }
 }
